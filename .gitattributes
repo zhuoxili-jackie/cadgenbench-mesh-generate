@@ -1,10 +1,5 @@
-* text=auto
-*.py text eol=lf
-*.md text eol=lf
-*.json text eol=lf
-*.jsonl text eol=lf
-*.yaml text eol=lf
-*.lock text eol=lf
+# Frozen code/config and manifest hashes refer to exact bytes across platforms.
+* -text
 *.ply binary
 *.stl binary
 *.png binary

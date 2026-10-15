@@ -1,0 +1,11 @@
+# Dataset card: v1.0.0
+
+174 accepted damaged Mesh cases; 29 anonymous part groups × three difficulty levels × seeds 20261014 and 20261015. All 32 fixed public CADGenBench STEP sources were investigated: 24 native, 5 official polygonal approximation, 3 excluded. Each eligible source has six cases. Per-case units, actual pose count, density, precision layer, hashes and archive locations are in data_index/accepted_cases.jsonl and the full release manifest.
+
+This is a geometric tabletop scanner simulation with exact poses, ideal segmentation and controlled Euclidean range noise. Stable tabletop placements, first-hit object/table occlusion and complete downward three-turn spirals are used. Hard retains full azimuth coverage. No GT normals/topology or GT projection is used for reconstruction. Missing surfaces are not globally filled. Physical protocol: physical_scan_v2_overlap_density; implementation: r4_continuous_free_space.
+
+19 sources have fewer than three certified stable orientations. Five sources use qualified, unchanged official polygonal references with their original precision. Deep cavities, subresolution features and small BPA meshing losses remain limitations. Some source STEP representations pass the frozen default OCCT validity checks but fail additional continuous parameter checks; no CAD representation repair or downstream Boolean guarantee is claimed. Eight cases have investigated natural separation; two quantify joins across less-than-one-pixel gaps. Full local evidence is retained by the data producer.
+
+The released observations, cameras, configs, working-point provenance and exact reconstruction modules support independent observation-only rebuilding. GT, original STEP, case-source mapping, private evaluation images, state databases, old revisions and reconstruction caches are excluded. Anonymous part_group IDs allow source-group development/evaluation splits without the original STEP mapping. Public previews show actual observed Mesh triangles only.
+
+Upstream data revision: f76f965585817c621d6ea0d150d745adf670e66e, HuggingAI4Engineering/CADGenBench/Mecado, ODC-BY attribution retained. Third-party tessellator revision: 33304cf771fc5639144b1df9611e347251052cf8, Apache-2.0. See LICENSES.md and sources/DATA_CARD_UPSTREAM.md in the parent code repository. No new repair or modeling experiments were run.

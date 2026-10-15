@@ -7,6 +7,7 @@ import trimesh
 from scipy.spatial import cKDTree
 from .common import *
 from .observation_grid import FirstReturnGrid
+from .sampling_density import source_scan_settings,verify_case_sampling_contract
 
 def read_mesh(path):
     mesh=trimesh.load(path,process=False,force='mesh')
@@ -81,7 +82,8 @@ def physical_case_check(record,out):
     sid=record['source_id']; gt=ROOT/f'private/gt/{sid}'; meta=load_json(gt/'metadata.json'); places=load_json(gt/'placements.json')['placements']
     public=load_json(out/'cameras.json'); mother={c['id']:c for c in load_json(gt/'cameras.json')['cameras']}; actual=public['cameras']; cfg=config()
     expected_place=min(cfg['difficulty'][record['level']]['placements'],len(places)); stride=cfg['difficulty'][record['level']]['stride']
-    expected_frames=cfg['scan']['intervals']//stride+1
+    verify_case_sampling_contract(record,out)
+    expected_frames=source_scan_settings(sid)['intervals']//stride+1
     assert len(actual)==expected_place*expected_frames
     minheight=np.inf; minclear=np.inf; aim_error=0.; roundtrip=0.; gaps=[];frame_margin=np.inf
     raw=np.load(gt/'mesh.npz'); vertices=raw['vertices']
@@ -234,7 +236,8 @@ def current_fragmentation_review(out,record):
 
 def validation_fingerprint(out,record,gates):
     """Hash actual referenced payloads too: a stale manifest is never a cache hit."""
-    files=['mesh.ply','mesh.stl','points_for_meshing.ply','observations.json','cameras.json','reconstruction_config.json','reconstruction.json','README.json','point_provenance.npz']
+    verify_case_sampling_contract(record,out)
+    files=['mesh.ply','mesh.stl','points_for_meshing.ply','observations.json','cameras.json','reconstruction_config.json','reconstruction.json','README.json','point_provenance.npz','sampling_contract.json']
     public={f:file_hash(out/f) for f in files}
     refs=load_json(out/'observations.json');root=(out/refs['data_root_relative']).resolve();payloads={}
     for frame in refs['frames']:
@@ -254,7 +257,7 @@ def validation_fingerprint(out,record,gates):
     review=ROOT/f'private/annotations/{record["case_id"]}/fragmentation_review.json'
     if current_fragmentation_review(out,record) is not None:
         private['fragmentation_review.json']=file_hash(review)
-    return stage_hash({'public':public,'observations':payloads,'private':private},gates,['validate.py','observation_grid.py','contact_support.py'],['numpy','open3d','trimesh','scipy'])
+    return stage_hash({'public':public,'observations':payloads,'private':private},gates,['validate.py','observation_grid.py','contact_support.py','sampling_density.py'],['numpy','open3d','trimesh','scipy'])
 
 def validate_case(cid,state):
     record=load_json(ROOT/f'private/annotations/{cid}/case.json'); out=ROOT/record['input_path']; gates=yaml.safe_load((ROOT/'configs/quality_gates.yaml').read_text())

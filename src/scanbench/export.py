@@ -37,6 +37,7 @@ def export_case(cid,destination,observations_only=False):
     if destination.exists() and any(destination.iterdir()): raise ValueError('export destination must be empty')
     source=ROOT/f'data/cases/{cid}/input'; out=destination/f'data/cases/{cid}/input'; out.mkdir(parents=True,exist_ok=True)
     names=['observations.json','cameras.json','reconstruction_config.json','README.json']
+    if (source/'sampling_contract.json').exists(): names.append('sampling_contract.json')
     if not observations_only: names+=['mesh.ply','mesh.stl','points_for_meshing.ply','point_provenance.npz','reconstruction.json','continuous_veto.json']
     for name in names: shutil.copy2(source/name,out/name)
     for rec in load_json(source/'observations.json')['frames']:

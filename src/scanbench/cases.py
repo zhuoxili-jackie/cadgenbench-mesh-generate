@@ -1,6 +1,7 @@
 from pathlib import Path
 import numpy as np
 from .common import *
+from .sampling_density import case_sampling_contract
 
 def case_id(sid,level,seed): return 'case_'+digest(['physical_scan_v1',sid,level,seed])[:16]
 
@@ -15,22 +16,24 @@ def prepare_case(sid,level,seed,state):
     publickeys=['id','placement_id','mother_frame_id','resolution','K','T_object_from_camera','near_mm','far_mm']
     publiccam={k:v for k,v in allcams.items() if k!='cameras'}
     publiccam['cameras']=[{k:c[k] for k in publickeys} for c in selected]
-    key=stage_hash([frames,publiccam,digest(cfg)],cfg['reconstruction'],['cases.py'],['numpy'])
+    sampling=case_sampling_contract(sid,level,count)
+    key=stage_hash([frames,publiccam,digest(cfg),sampling],cfg['reconstruction'],['cases.py','sampling_density.py'],['numpy'])
     inputs_changed=not state.valid(cid,'case_inputs',key)
     if inputs_changed:
         state.begin(cid,'case_inputs',key)
         atomic_json(out/'observations.json',{'schema':'observations_v1','data_root_relative':'../../..','frames':frames})
         atomic_json(out/'cameras.json',publiccam)
         atomic_json(out/'reconstruction_config.json',cfg['reconstruction'])
+        atomic_json(out/'sampling_contract.json',sampling)
         atomic_json(out/'README.json',{'schema':'case_v1','case_id':cid,'units':'mm','coordinate_system':'canonical object; accurate known poses',
                    'range':'Euclidean unit-ray distance in mm','observations':'float32 noisy range_mm and uint32 row-major valid pixel; ideal foreground segmentation after tabletop occlusion',
                    'refs':'paths relative to observations.json; all resolve within the public data root','difficulty':level,'seed':seed,
                    'placement_count':count,'reorientation_count':count-1,'frames_per_placement':len(selected)//count,'config_sha256':digest(cfg)})
-        state.finish(cid,'case_inputs',key,[out/'observations.json',out/'cameras.json',out/'reconstruction_config.json',out/'README.json'],{})
+        state.finish(cid,'case_inputs',key,[out/'observations.json',out/'cameras.json',out/'reconstruction_config.json',out/'README.json',out/'sampling_contract.json'],{})
     annotation={'case_id':cid,'source_id':sid,'source_sha256':meta['source_sha256'],'precision_layer':meta['status'],
                 'level':level,'seed':seed,'placement_count':count,'reorientation_count':count-1,'frames_per_placement':len(selected)//count,
-                'resolution':allcams['resolution'],'protocol':cfg['protocol'],'protocol_config_sha256':digest(cfg),'generation_status':'inputs_ready','validation_status':'pending',
-                'input_path':str(out.relative_to(ROOT)).replace('\\','/'),'limited_placements':placements['limited_placements']}
+                'resolution':allcams['resolution'],'protocol':sampling['protocol'],'protocol_config_sha256':digest(cfg),'generation_status':'inputs_ready','validation_status':'pending',
+                'input_path':str(out.relative_to(ROOT)).replace('\\','/'),'limited_placements':placements['limited_placements'],'sampling_contract_sha256':file_hash(out/'sampling_contract.json')}
     existing=state.db.execute('SELECT body FROM records WHERE kind=? AND id=?',('cases',cid)).fetchone()
     if existing:
         previous=json.loads(existing[0]);previous.update({k:v for k,v in annotation.items() if k not in ['generation_status','validation_status']});annotation=previous

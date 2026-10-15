@@ -9,6 +9,8 @@ from scanbench.scan import observation_hash
 from scanbench.validate import validation_fingerprint
 from scanbench.reporting import REQUIRED_TESTS,report,required_test_path
 from scanbench.supplemental import audit_case
+from audit_sampling_density_revision import evidence_file_verified,archived_metadata_verified,audit as audit_sampling_revision
+from scanbench.sampling_density import sampling_policy,verify_case_sampling_contract
 
 def main():
     started=time.time();errors=[];cfg=config();frozen=load_json(ROOT/'reports/protocol_freeze.json');gates=yaml.safe_load((ROOT/'configs/quality_gates.yaml').read_text());state=State()
@@ -17,12 +19,16 @@ def main():
     check(cfg['status']=='frozen' and digest(cfg)==frozen['protocol_config_sha256'],'protocol config differs from freeze')
     check(file_hash(ROOT/'configs/quality_gates.yaml')==frozen['quality_gates_sha256'],'quality gates differ from freeze')
     check(frozen.get('implementation_revision')=='r4_continuous_free_space','current continuous free-space correction is not frozen')
+    sampling=sampling_policy()
+    check(sampling is not None and frozen.get('physical_protocol_revision')==sampling['protocol'],'current physical sampling version is not frozen')
+    sampling_policy_receipt=frozen.get('physical_sampling_policy',{})
+    check(sampling_policy_receipt.get('path')=='configs/sampling_density_v2.json' and sampling_policy_receipt.get('sha256')==file_hash(ROOT/'configs/sampling_density_v2.json'),'physical sampling policy differs from freeze')
     for path,h in frozen['code_sha256'].items():check(file_hash(ROOT/path)==h,f'frozen code changed: {path}')
     check(file_hash(ROOT/frozen.get('code_snapshot_path','reports/frozen_protocol_code.zip'))==frozen['code_snapshot_sha256'],'active frozen code snapshot mismatch')
     for item in frozen.get('implementation_amendments',[]):
         p=ROOT/item['path'];check(file_hash(p)==item['sha256'],'implementation amendment changed');change=load_json(p)
         check(change['status']=='passed_implementation_correction' and not change['physical_protocol_or_quality_gates_changed'],'unverified implementation correction')
-        for name,h in change['evidence_sha256'].items():check(file_hash(ROOT/name)==h,f'implementation correction evidence changed: {name}')
+        for name,h in change['evidence_sha256'].items():check(evidence_file_verified(name,h),f'implementation correction evidence changed without bounded historical archive: {name}')
     for name,h in frozen.get('implementation_tests_sha256',{}).items():check(file_hash(ROOT/name)==h and load_json(ROOT/name)['status']=='pass',f'implementation compatibility test failed/stale: {name}')
     hp=load_json(ROOT/'reports/tests/hull_pose_proposals.json')
     check(hp.get('status')=='pass' and hp.get('proposal_code_sha256')==file_hash(ROOT/'scripts/hull_pose_proposals.py') and hp.get('test_script_sha256')==file_hash(ROOT/'scripts/test_hull_pose_proposals.py'),'finite hull proposal control test failed/stale')
@@ -61,7 +67,9 @@ def main():
     for path,key in [(ROOT/'scripts/run_full.py','driver_sha256'),(isolation_dir/'run_full_before.py','previous_driver_sha256'),(isolation_dir/'child.log','child_log_sha256')]:
         check(file_hash(path)==isolation[key],f'case-process isolation evidence changed: {path.name}');file_inventory[str(path.relative_to(ROOT)).replace('\\','/')]=file_hash(path)
     check(len(isolation['inventory'])==isolation['qualified_files_unchanged'],'case-process isolation file count differs')
-    from audit_continuous_revision import historical_file_verified,audit_case as audit_continuous_case,audit_baseline_inventory
+    from audit_continuous_revision import historical_file_verified as r4_historical_file_verified,audit_case as audit_continuous_case,audit_baseline_inventory
+    def historical_file_verified(name,entry):
+        return r4_historical_file_verified(name,entry) or archived_metadata_verified(name,entry['sha256'],entry['mtime_ns'])
     for name,entry in isolation['inventory'].items():
         path=ROOT/name;check(historical_file_verified(name,entry),f'case-process isolation original evidence missing or changed without explicit r4 archive: {name}');file_inventory[name]=file_hash(path)
     file_inventory[str(isolation_path.relative_to(ROOT)).replace('\\','/')]=file_hash(isolation_path)
@@ -92,16 +100,47 @@ def main():
                 fusion=folder/'rebuilt/.reconstruction_cache/fusion.npz'
                 check([file_hash(fusion),fusion.stat().st_mtime_ns]==proof['fusion_before'],f'{test}: completed fusion checkpoint changed')
         except Exception as exc:errors.append(f'{test}: unreadable actual proof artifact: {exc}')
+    current_reproduction={}
+    try:
+        current_reproduction_path=ROOT/'reports/tests/full_case_reproduction_sampling_v2.json'
+        current_reproduction=load_json(current_reproduction_path)
+        check(current_reproduction['status']=='pass' and current_reproduction['physical_protocol']==sampling['protocol'],'current-version STEP reproduction failed')
+        check(current_reproduction['current_code_sha256']==frozen['code_sha256'],'current STEP reproduction used different code')
+        check(current_reproduction['checker_script_sha256']==file_hash(ROOT/'scripts/test_current_step_reproduction.py'),'current STEP reproduction checker changed')
+        check(current_reproduction['sampling_policy_sha256']==sampling_policy_receipt['sha256'],'current STEP reproduction used a different policy')
+        check(current_reproduction['step_import_tessellation_placement_scan_noise_reconstruction_reexecuted'] and current_reproduction['resolution_and_sigma_independently_rederived'] and current_reproduction['only_original_STEP_copied_as_source_geometry'],'current STEP reproduction scope is incomplete')
+        fresh=(ROOT/current_reproduction['fresh_directory']).resolve();fresh_input=fresh/f'data/cases/{cid}/input'
+        check(fresh.is_relative_to(ROOT/'tests/artifacts'),'current reproduction escaped test artifacts')
+        check(file_hash(ROOT/current_reproduction['fresh_source_step'])==current_reproduction['source_sha256']==file_hash(ROOT/'sources/218/input.step'),'current reproduction STEP provenance differs')
+        actual=read_mesh(fresh_input/'mesh.ply')
+        check(np.array_equal(original_proof_mesh.vertices,actual.vertices) and np.array_equal(original_proof_mesh.faces,actual.faces),'current fresh STEP actual geometry/connectivity differs')
+        check(load_json(fresh_input/'cameras.json')==load_json(inp/'cameras.json'),'current fresh STEP camera selection differs')
+        check(file_hash(fresh_input/'sampling_contract.json')==current_reproduction['sampling_contract_sha256']==file_hash(inp/'sampling_contract.json'),'current fresh STEP sampling contract differs')
+        before_frames=load_json(inp/'observations.json')['frames'];fresh_frames=load_json(fresh_input/'observations.json')['frames']
+        check(len(before_frames)==len(fresh_frames),'current fresh STEP observation frame count differs')
+        compared=0
+        for before,after in zip(before_frames,fresh_frames):
+            check(before['camera_id']==after['camera_id'],'current fresh STEP frame order differs')
+            a_path=(inp/before['path']).resolve();b_path=(fresh_input/after['path']).resolve()
+            check(b_path.is_relative_to(fresh/'data') and file_hash(b_path)==after['file_sha256'],'current fresh STEP observation payload differs from its manifest')
+            with np.load(a_path) as a,np.load(b_path) as b:
+                check(np.array_equal(a['pixel'],b['pixel']) and np.array_equal(a['range_mm'],b['range_mm']),'current fresh STEP actual observed arrays differ');compared+=len(b['pixel'])
+            file_inventory[b_path.relative_to(ROOT).as_posix()]=file_hash(b_path)
+        check(compared==current_reproduction['observed_pixels_compared'],'current fresh STEP compared-return count differs')
+        for path in [current_reproduction_path,ROOT/'scripts/test_current_step_reproduction.py',fresh_input/'mesh.ply',fresh_input/'cameras.json',fresh_input/'observations.json',fresh_input/'sampling_contract.json',ROOT/current_reproduction['fresh_source_step']]:file_inventory[path.relative_to(ROOT).as_posix()]=file_hash(path)
+    except Exception as exc:errors.append(f'current-version complete STEP reproduction: {type(exc).__name__}: {exc}')
     delivery_export_path=ROOT/frozen['delivery_export_evidence']
     try:
         export_proof=load_json(delivery_export_path);folder=(ROOT/export_proof['destination']).resolve()
-        check(folder.is_relative_to(ROOT) and folder.name=='exported_case_r4','delivery export escaped its declared directory')
+        check(folder.is_relative_to(ROOT) and folder.name=='exported_case_sampling_v2','delivery export escaped its declared directory')
         check(export_proof['status']=='pass' and export_proof['no_mesh_supplied'] and export_proof['initial_output_empty'],'delivery export was not an empty observation-only reconstruction')
         check(export_proof['script_sha256']==file_hash(ROOT/export_proof['checker_script']),'delivery command checker changed')
         check(export_proof['case_id']==cid and export_proof['source_mesh_sha256']==mh and export_proof['reconstruction_code_sha256']==ch,'delivery command proof input or code differs')
         check(export_proof['continuous_module_sha256']==file_hash(ROOT/'src/scanbench/continuous_free_space.py'),'delivery continuous module changed')
         for module,h in export_proof['copied_code_sha256'].items():check(file_hash(folder/'src/scanbench'/module)==h==file_hash(ROOT/'src/scanbench'/module),f'delivery copied code differs: {module}')
-        check(export_proof['commands'][0][1:]==['scripts/scanbench.py','export-case','--case-ids',cid,'--output','exported_case_r4','--observations-only'] and export_proof['commands'][1][1:]==['exported_case_r4/rebuild.py'],'verified public commands differ')
+        check(export_proof['commands'][0][1:]==['scripts/scanbench.py','export-case','--case-ids',cid,'--output','exported_case_sampling_v2','--observations-only'] and export_proof['commands'][1][1:]==['exported_case_sampling_v2/rebuild.py'],'verified public commands differ')
+        exported_contract=folder/f'data/cases/{cid}/input/sampling_contract.json'
+        check(export_proof['physical_protocol']==sampling['protocol'] and export_proof['sampling_contract_included'] and file_hash(exported_contract)==export_proof['sampling_contract_sha256']==file_hash(inp/'sampling_contract.json'),'current exported sampling contract differs')
         for name,key in [('export.json','export_manifest_sha256'),('access_audit.json','access_audit_sha256'),('rebuilt/mesh.ply','rebuilt_mesh_sha256')]:
             path=folder/name;check(file_hash(path)==export_proof[key],f'delivery export artifact changed: {name}');file_inventory[str(path.relative_to(ROOT)).replace('\\','/')]=file_hash(path)
         for name,h in load_json(folder/'export.json')['files'].items():
@@ -276,11 +315,12 @@ def main():
     for cid,rec in sorted(cases.items()):
         try:
             out=ROOT/rec['input_path'];a=load_json(ROOT/f'private/annotations/{cid}/acceptance.json');key=validation_fingerprint(out,rec,gates);check(a['status']=='pass' and a['validation_hash']==key and state.valid(cid,'validation',key),f'{cid}: independent acceptance stale/failed');check(rec['protocol_config_sha256']==digest(cfg),f'{cid}: old protocol metadata')
+            contract=verify_case_sampling_contract(rec,out);check(rec['protocol']==sampling['protocol'] and contract['protocol']==sampling['protocol'],f'{cid}: mixed physical protocol versions')
             current_mesh_key=mesh_stage_key(out,cfg['reconstruction']);check(rec['mesh_stage_hash']==current_mesh_key and state.valid(cid,'mesh',current_mesh_key),f'{cid}: obsolete reconstruction stage')
             continuous=audit_continuous_case(cid);check(continuous['status']=='pass',f'{cid}: continuous geometry/witness audit failed');continuous_results.append({'case_id':cid,'removed_faces':continuous['removed_faces'],'removed_area_fraction':load_json(out/'continuous_veto.json')['removed_area_fraction']})
             cp=ROOT/f'reports/continuous_independent/{cid}.json';file_inventory[str(cp.relative_to(ROOT)).replace('\\','/')]=file_hash(cp)
             for name,h in rec['outputs'].items():check(file_hash(out/name)==h,f'{cid}: output mismatch {name}');file_inventory[str((out/name).relative_to(ROOT)).replace('\\','/')]=h
-            for name in ['README.json','cameras.json','observations.json','reconstruction_config.json']:
+            for name in ['README.json','cameras.json','observations.json','reconstruction_config.json','sampling_contract.json']:
                 file_inventory[str((out/name).relative_to(ROOT)).replace('\\','/')]=file_hash(out/name)
             extra=audit_case(cid);check(extra['status']=='pass',f'{cid}: supplemental feature failure');feature_limits.extend({'case_id':cid,**f} for f in extra['all_cylindrical_passages']['features'] if f['status']=='below_declared_resolution')
             if a.get('natural_separation_evidence'):natural.append(cid)
@@ -324,6 +364,17 @@ def main():
         baseline_audit=audit_baseline_inventory();check(baseline_audit['status']=='pass','upstream baseline preservation failed')
         file_inventory[str((r4/'full_inventory_audit.json').relative_to(ROOT)).replace('\\','/')]=file_hash(r4/'full_inventory_audit.json')
     except Exception as exc:errors.append(f'r4 whole-baseline preservation: {type(exc).__name__}: {exc}')
+    sampling_audit={}
+    try:
+        amendment_reference=frozen['physical_sampling_amendment'];amendment_path=ROOT/amendment_reference['path'];amendment=load_json(amendment_path)
+        check(file_hash(amendment_path)==amendment_reference['sha256'] and amendment['status']=='passed_controlled_physical_sampling_revision','physical sampling amendment differs from freeze')
+        check(amendment['quality_gates_changed'] is False and amendment['reconstruction_changed'] is False and amendment['physical_sampling_schedule_changed'] is True,'sampling amendment scope differs')
+        for name,h in amendment['evidence_sha256'].items():check(file_hash(ROOT/name)==h,f'physical sampling amendment evidence changed: {name}');file_inventory[name]=h
+        sampling_audit=audit_sampling_revision(False);check(sampling_audit['status']=='pass' and sampling_audit['phase']=='full_current_batch','full sampling revision independent audit failed')
+        sampling_folder=ROOT/'reports/protocol_amendments/r5_sampling_density'
+        for path in [amendment_path,sampling_folder/'full_independent_audit.json',ROOT/'configs/sampling_density_v2.json',*sampling_folder.glob('default_sources/*.json'),*sampling_folder.glob('default_cases/*.json')]:file_inventory[path.relative_to(ROOT).as_posix()]=file_hash(path)
+        for archive in load_json(sampling_folder/'metadata_archives.json').values():file_inventory[archive['path']]=file_hash(ROOT/archive['path'])
+    except Exception as exc:errors.append(f'physical sampling v2 independent audit: {type(exc).__name__}: {exc}')
     summary={l:{k:{'min':min(v[k] for v in rows),'mean':float(np.mean([v[k] for v in rows])),'max':max(v[k] for v in rows)} for k in rows[0]} for l,rows in levels.items()}
     atomic_json(ROOT/'reports/final_file_inventory.json',{'files':file_inventory,'count':len(file_inventory),'digest':digest(file_inventory)})
     result={'status':'pass' if not errors else 'failed','errors':errors,'source_count':len(sources),'eligible_source_count':len(eligible),'actual_case_count':len(cases),'actual_unique_observations':len(obs_seen),'all_32_attempted':set(sources)==set(IDS),'quality_by_difficulty':summary,'limited_placements':limited,'natural_separation_cases':natural,'below_resolution_features':feature_limits,'test_report_hashes':tests,'file_inventory_sha256':file_hash(ROOT/'reports/final_file_inventory.json'),'seconds':time.time()-started,'time':time.time(),'scope':'all sources, cases, actual payload arrays, complete PLY/STL/point provenance acceptance, shared observations, seed difference, tests and direct image-review evidence; no generation or repair'}
@@ -335,6 +386,9 @@ def main():
     result['native_reference_mesher_adjustments']=mesher_adjustments
     result['source_validity_diagnostics']={'default_validity_method':'Frozen OCCT BRepCheck_Analyzer default geometry checks; reference topology and sampled boundary precision are qualified independently. Extra continuous same-parameter checks are a separately reported source limitation.','evidence':'reports/source_validity_scope.json','analytic_controls':'reports/tests/brep_checker_modes.json','all32_checked':True,'ordinary_valid_sources':[sid for sid,row in validity_rows.items() if row['ordinary_valid']],'extra_exact_parameter_warnings':parameter_warnings,'additional_quantification':parameter_quantification,'no_source_tolerance_or_geometry_modified':True,'extra_checks_are_not_claimed_to_pass':True}
     result['delivery_export_command_evidence']=str(delivery_export_path.relative_to(ROOT)).replace('\\','/')
+    result['physical_sampling_revision']=sampling_audit
+    result['current_protocol_full_step_reproduction']={'path':'reports/tests/full_case_reproduction_sampling_v2.json','status':current_reproduction.get('status'),'physical_protocol':current_reproduction.get('physical_protocol'),'actual_observed_returns_recompared':current_reproduction.get('observed_pixels_compared'),'actual_geometry_and_connectivity_recompared':bool(current_reproduction)}
+    result['script_sha256']=file_hash(Path(__file__))
     result['continuous_free_space_correction']={'cases':continuous_results,'affected_cases':sum(x['removed_faces']>0 for x in continuous_results),'removed_faces':sum(x['removed_faces'] for x in continuous_results),'max_case_removed_area_fraction':max((x['removed_area_fraction'] for x in continuous_results),default=0),'all_removed_faces_independently_justified':len(continuous_results)==len(cases),'baseline_preservation':baseline_audit}
     atomic_json(ROOT/'reports/monotonicity/summary.json',{'status':'pass' if not errors else 'failed','sources':eligible,'nonmonotonic_pairs':nonmonotonic,'formal_scores_unchanged':True})
     atomic_json(ROOT/'reports/final_audit.json',result);report();print(canonical_json({k:v for k,v in result.items() if k not in ['below_resolution_features','test_report_hashes','quality_by_difficulty','nonmonotonic_mesh_coverage']}))

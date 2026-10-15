@@ -27,7 +27,7 @@ def render(sid):
                 if np.count_nonzero(corners[a]!=corners[b])==1:ax.plot(*corners[[a,b]].T,color='#758995',lw=.8)
         center=(lo+hi)/2
         for eye in eyes[::32]:ax.plot(*np.array([eye,center]).T,color='#86a5b0',lw=.5,alpha=.5)
-        ax.set_box_aspect([1,1,.6]);ax.set_xlabel('X / mm');ax.set_ylabel('Y / mm');ax.set_zlabel('Z / mm');ax.set_title('All 193 mother positions; sampled sight lines to centre\nwire box = object bounds, support plane z = 0');ax.legend(fontsize=8)
+        ax.set_box_aspect([1,1,.6]);ax.set_xlabel('X / mm');ax.set_ylabel('Y / mm');ax.set_zlabel('Z / mm');ax.set_title(f'All {len(eyes)} mother positions; sampled sight lines to centre\nwire box = object bounds, support plane z = 0');ax.legend(fontsize=8)
     fig.tight_layout(rect=[0,0,1,.95]);buffer=io.BytesIO();fig.savefig(buffer,format='png',dpi=130);plt.close(fig);atomic_bytes(dest,buffer.getvalue());atomic_json(marker,{'key':key,'png_sha256':file_hash(dest)});return dest
 
 if __name__=='__main__':

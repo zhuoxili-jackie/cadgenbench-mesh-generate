@@ -1,11 +1,7 @@
 # 协作入口
 
-仓库为李卓曦与黄星尧的 Generate 协作预览。先消费 `examples/observed_case/` 的 raw Mesh，再通过 Release 下载完整观测重建包。模型可见文件按案例允许清单配置，GT 与私有评测映射在可信侧另包交接。
+本仓库提供已完成的 Generate 实现和 174 例数据清单，完整数据通过正式 Release v1.0.0 附件获取。普通 git clone 只下载代码、索引与展示。先按 README 的 meshes 预设获取全部 STL/PLY；需要重建机制时补 full 或单例 rebuild 预设。
 
-普通 `git clone` 获取代码和演示 Mesh；全量扫描数据不随克隆下载。版本、已验收案例和下载包哈希在 `data_index/`，分发约定见 `docs/DATA_DISTRIBUTION.md`。
+`au12321ua` 已有 write 权限。请在分支提交改动，保留案例原始字节、mm 单位和 SHA256。生成目录、环境、缓存、下载包和私有评测材料均 gitignore，不要强制加入 Git。按匿名 part_group 划分开发/评测，六个案例保持同组。
 
-改动在分支上提交。生成目录、环境、缓存和运行日志已忽略。不要把本地整个 `data/` 强制加入 Git；原始字节、坐标、单位与哈希应保持可追溯。
-
-环境、输入格式或观察工具有变化时，先提交最小案例和影响说明。当前 full-batch 脚本需要原工程证据与状态，本快照主要服务代码审阅、首件读取、独立观测重建及接口联调。
-
-[协作计划](https://mcn12m1x8pa4.feishu.cn/wiki/QUzLwk9UDiLf6Hk36qXcSlZJn2c) · [For Huang](https://mcn12m1x8pa4.feishu.cn/wiki/WJsswtWQ9iTC4kkIvrTcnhUIneg) · [For Li](https://mcn12m1x8pa4.feishu.cn/wiki/DhPJwydQZifT8VkYkFHceMDCn9w)
+Generate 与 Repair 分开；Repair 是 https://github.com/zhuoxili-jackie/scanmesh-toolkit 。本次只更新生成实现、数据分发与案例展示，没有运行修复实验。

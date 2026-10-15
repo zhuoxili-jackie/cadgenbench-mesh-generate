@@ -1,18 +1,537 @@
 {
-  "schema": "data_release_index_v1",
-  "version": "v0.1.0-preview",
-  "status": "collaboration_preview_not_final_dataset",
+  "schema": "accepted_release_asset_index_v2",
+  "version": "v1.0.0",
+  "status": "all_174_cases_independently_accepted",
+  "release_url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/tag/v1.0.0",
+  "case_count": 174,
+  "part_groups": 29,
+  "full_public_dataset_available": false,
+  "evaluation_GT_included": false,
+  "accepted_case_inventory": "accepted_cases.jsonl",
+  "manifest_name": "release-manifest.json",
+  "manifest_sha256": "32bffd84efdc163a6d25017c47a3a574cf598737f3807ecf13c5e10eb324ca21",
+  "presets": {
+    "meshes": [
+      "metadata",
+      "meshes",
+      "previews"
+    ],
+    "rebuild": [
+      "metadata",
+      "reconstruction",
+      "observations"
+    ],
+    "full": [
+      "metadata",
+      "meshes",
+      "previews",
+      "reconstruction",
+      "observations"
+    ]
+  },
   "assets": [
     {
-      "name": "observed-case-v0.1.0-preview.zip",
-      "bytes": 26399696,
-      "sha256": "a179d4d22573f62c5ca194904b5e4e4edc1af880334c9884407fc5728ba2adac",
-      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v0.1.0-preview/observed-case-v0.1.0-preview.zip",
-      "checksum_url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v0.1.0-preview/observed-case-v0.1.0-preview.zip.sha256",
-      "contents": "one accepted observed Mesh case, its real noisy range observations, cameras, provenance and observation-only reconstruction code; no GT/STEP/private mapping"
+      "family": "meshes",
+      "name": "meshes-v1.0.0-001.zip",
+      "bytes": 318731206,
+      "sha256": "2d957fbef1c20da9db01cf1d3c16ad3838322d17b07f70f218f2f746d64d23e9",
+      "files": 56,
+      "signature": "d39a920be9314969d432e59472757ec334878b482789fd7869d2ccb1c8027c4c",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-001.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-002.zip",
+      "bytes": 311977975,
+      "sha256": "a22ab4a4344ba7c9d3f1014508f81cec67e11bf8c63d72d51547035df08dfff7",
+      "files": 32,
+      "signature": "687fe9a116ca77e1204efd84e034ba64307b220406eb2ed7dd334a039ea7f9df",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-002.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-003.zip",
+      "bytes": 297796847,
+      "sha256": "358c23e3271192496fad067f973df2c184becb82c5ae080fea923878b86993a0",
+      "files": 56,
+      "signature": "afb3bbc7cbbca25406cc9ea435733f99a91754fe185d6559b21b08954913379c",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-003.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-004.zip",
+      "bytes": 293795621,
+      "sha256": "64fa6820ea92f0b55ce2599fc641d5b21a9dd835e8e5ef63554d0cb32177686c",
+      "files": 44,
+      "signature": "5cdef1b73777448aeda257c382b18625e5e7631ce00e2defe8aa84a1c636a402",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-004.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-005.zip",
+      "bytes": 288865105,
+      "sha256": "6c3f3e3e12a406cf492d9f61deddb3cc453c10ba52e1256d2ce795abfa2f810b",
+      "files": 40,
+      "signature": "36838035476cfc8cded89a990e95c05a7da3faf16614201d43ee6df20de36c99",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-005.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-006.zip",
+      "bytes": 271119101,
+      "sha256": "4e2e7d42602f1bb3331f75b158033ddf4618dc434cb23b8753344407755f9e57",
+      "files": 60,
+      "signature": "dd8f10b11a6bb6d1a79b3bae7f4a82aab1cc2dbf6d119654d4e4064d65d7467b",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-006.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-007.zip",
+      "bytes": 271219470,
+      "sha256": "c906881b469d8dc9207292b86e842a13c087ce8a1ef6c507144a6df1baf5d11a",
+      "files": 24,
+      "signature": "bd2a4edffd02fd45e0bd94f1de0f29bcfd7d45e5b981bcb6606f95a3563604f7",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-007.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-008.zip",
+      "bytes": 264001972,
+      "sha256": "ca49c244a26afb9b76a414a895deba1df392fabb8bcc40f21f869d3de1dba5fd",
+      "files": 20,
+      "signature": "0c34ae3e8fbb0bfebc4eece9f3fb13f42cf3c802c943c78f21ff4155ff9a7b41",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-008.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-009.zip",
+      "bytes": 319374911,
+      "sha256": "c59f319c8a2d4bbfdc89e049d4dfd5a8d42d87c1a51a2db4049863014acb311d",
+      "files": 56,
+      "signature": "75a3f0e5d8f02895cb609f1154173ed7cfb06114c334db0d8a0e28a2fe2d3aa8",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-009.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-010.zip",
+      "bytes": 296295684,
+      "sha256": "6e92cab88a0ec111dd015d14afade7958ca4858c697b348172b6716a1364f5ec",
+      "files": 40,
+      "signature": "3450532db641566fa1175f71a2ee318e33031282992d920c7f44424e39d08c6e",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-010.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-011.zip",
+      "bytes": 318616637,
+      "sha256": "3b2bde5f66590255d84fe35d636fa04b1b9a4750af5e7ccdc8c50618d5765656",
+      "files": 64,
+      "signature": "876c7cc4f8c795aca96edd6db55e84a62211383e79cc852573cadba945356e5e",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-011.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-012.zip",
+      "bytes": 307766455,
+      "sha256": "4fd8dc9f17bc4c8a2794d2df0f9cdcc2ea25f1957f2a11a77244d4aa2aac0d97",
+      "files": 32,
+      "signature": "a7abbb2353a2817fd6fcdf67a04fd208fdd6961dca071d2897a81c251a685fa0",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-012.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-013.zip",
+      "bytes": 291601199,
+      "sha256": "d5605c4a2d52cf41629b8a1ca279255568ad134b4c2d605bbb1f66119a2ebb0d",
+      "files": 40,
+      "signature": "5016e76f5898c98b9bcb2ca33ab49cc35baa29feed8c6d7e96408e92f2660b5d",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-013.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-014.zip",
+      "bytes": 298190100,
+      "sha256": "a62bfebedf0d684973209c6628283e9cdf40ae1a22be4e306c7d1815f5b91e8e",
+      "files": 56,
+      "signature": "d07eefac9c6b3eaf667fe950743048529224d3492e3744a4c657fed4f879fc50",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-014.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-015.zip",
+      "bytes": 279435515,
+      "sha256": "947fc1acf9def4d6611333bfe5451ec394f638fd522d6a73143185bc7f6520ac",
+      "files": 52,
+      "signature": "cc1d8f8cb192f4bad57d7cbf378f6299c18bb4abc7085d371167e09d2f21e93a",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-015.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-016.zip",
+      "bytes": 283377152,
+      "sha256": "ed86cc8ace8f8ddb9091b3b187d01c6cf823fc76e88f4dd3bb1a26d34050cbdd",
+      "files": 20,
+      "signature": "b89aacd0ec76633eec7898fd83dd916023f439f50ff825ee8675468e374e2d9e",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-016.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "meshes",
+      "name": "meshes-v1.0.0-017.zip",
+      "bytes": 56776412,
+      "sha256": "38378f3662da85adfb6720aaab3b92cb18ec1dc2e7ead7006bc8612d52997f38",
+      "files": 4,
+      "signature": "e48333577aa5e92c070c054a7af0dc8c5a2a31165f2cc5e08bbaaf9c85397406",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/meshes-v1.0.0-017.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "previews",
+      "name": "previews-v1.0.0-001.zip",
+      "bytes": 44035522,
+      "sha256": "4e9678ba6ca36c2504e7aef26f8e75d1cf44f5265506d481f87b0e13c8ec2de5",
+      "files": 175,
+      "signature": "6e5caaa7bce9eaa57effbb2d2fbd95e447bd0bf714ae49307116431444ae9ed5",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/previews-v1.0.0-001.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "reconstruction",
+      "name": "reconstruction-v1.0.0-001.zip",
+      "bytes": 492078875,
+      "sha256": "ee57ab0b51dcfac697477ab04000b27e8e07c2a21f8ccd5949d35ef96ab5b55e",
+      "files": 224,
+      "signature": "21dc611cb7e23430503ada6dd49108108739dd934dd68a3c56aeaf85f234a598",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/reconstruction-v1.0.0-001.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "reconstruction",
+      "name": "reconstruction-v1.0.0-002.zip",
+      "bytes": 489352368,
+      "sha256": "f60aed59251f839719694db476e3dc1bd221d08edca2f806a7124bddc41ff585",
+      "files": 210,
+      "signature": "65efeaab535029be7147f27255687c5b71190dbbe26e7357700380891d09a170",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/reconstruction-v1.0.0-002.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "reconstruction",
+      "name": "reconstruction-v1.0.0-003.zip",
+      "bytes": 495782075,
+      "sha256": "e489b80ca15979c83417695d771478c30d7fcf11dc91b1b60ae9d512b5f8e2e9",
+      "files": 175,
+      "signature": "2afe8b540c5ea3cffa22ef1a0a33ecea61f8ad7438b6dc2aea4ab3fab9b0f807",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/reconstruction-v1.0.0-003.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "reconstruction",
+      "name": "reconstruction-v1.0.0-004.zip",
+      "bytes": 484808569,
+      "sha256": "eecf417009c52dc52677610a599bc48aacbd7ce2347b46704e9b1ccbc5197e4c",
+      "files": 259,
+      "signature": "9d2278dd7f1bf28cf3d042fd6778f847bdbb03aaae58d136bd70595245f93aeb",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/reconstruction-v1.0.0-004.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "reconstruction",
+      "name": "reconstruction-v1.0.0-005.zip",
+      "bytes": 492904155,
+      "sha256": "9d199eda46ac5ef724eee3b8d888cf21cd9cb405676c53c881812b387450a186",
+      "files": 196,
+      "signature": "3f296d1474aedb5fde214c4fcdb3004944069a08c939238e34cd349d1719a2fe",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/reconstruction-v1.0.0-005.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "reconstruction",
+      "name": "reconstruction-v1.0.0-006.zip",
+      "bytes": 403094253,
+      "sha256": "2fa5c942414dff9b1d99f6ee0326a628794c55ae536346518f07619cd520af93",
+      "files": 154,
+      "signature": "4d6099a97dbed3f501d49c14f1bb3d59c5825d1deeb1a1d024608c32d5d793d8",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/reconstruction-v1.0.0-006.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-001.zip",
+      "bytes": 469632929,
+      "sha256": "8f38e1fa5791aa0c0b541ba30fe0e9b6aab5244ecc71715e2680efc3c68bcff4",
+      "files": 1544,
+      "signature": "fcc65c81425e54d8c7e03edbac03725ae9d6a02db01b858043b174defd94ac3a",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-001.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-002.zip",
+      "bytes": 505973095,
+      "sha256": "e4bb56040d0fd4953a1a9f3034214727de9dbe67aa94951dd67caa80ca4d545d",
+      "files": 965,
+      "signature": "aaf2ced3885be6db02b80660a6106073addc30449d4535f98c10faf89cbfeff2",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-002.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-003.zip",
+      "bytes": 519164304,
+      "sha256": "7826238db09b9b481062930e6a67964df35b41c84720a83947f334834cecddbd",
+      "files": 965,
+      "signature": "6c475bbc56190aba4739e3ee49661a29119b10180d0d1d7977fefe071d12b2ec",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-003.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-004.zip",
+      "bytes": 491452114,
+      "sha256": "0576df87c12d9cc29ebe3b63d87781ce2e7eeef06aaeaf35504aa3f68c61b651",
+      "files": 1351,
+      "signature": "11892f81fdcc702bdd3452194d9d266147477d0f4789ac714761e3423d35f1cb",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-004.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-005.zip",
+      "bytes": 532491099,
+      "sha256": "6ca1f2e1b09dd76b725eaf0980db91824b6e465fe751cf9ef5bfbad0d1397b6e",
+      "files": 1351,
+      "signature": "9b8a7b64a57db78be37fe9a4ba0a830f68475d89e1d81e9b7f687cc7e9248f0f",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-005.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-006.zip",
+      "bytes": 454670444,
+      "sha256": "7889f584e91184df13af16ab4934e379334cfca983513107fec6c444f3b70980",
+      "files": 1158,
+      "signature": "88a60f78b46d13a55fff1794327ad7117d83dd5111a43d1f277ff1f16eda0cc4",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-006.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-007.zip",
+      "bytes": 500276201,
+      "sha256": "6b9e6a4fb1158b4c6a8a295f42cfd6f983f50f4c92a622a624e7124e7ea2f33c",
+      "files": 1158,
+      "signature": "d4f732177ec1aba82dfafb4a3b610d6b3cba84ca402c400dfe5752c72b6450a5",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-007.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-008.zip",
+      "bytes": 527733605,
+      "sha256": "37f0756a35e1aead109cdf20368529aea897e0a3c293f34ac222a250d6bb97c8",
+      "files": 1158,
+      "signature": "86af7ae8dcfc4b0283445807fbe40c0b0d061abb99a7a0cc013be077ae98d84b",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-008.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-009.zip",
+      "bytes": 505892167,
+      "sha256": "2e7dfdb95098511f34ec66e34a6e93ef3df2b69420b3b166aec1f98bd55c2ff0",
+      "files": 1351,
+      "signature": "fa04d54303330ee4533187cf96d10fe1c67e1135a5f7cb1862a44aae5093dab3",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-009.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-010.zip",
+      "bytes": 496680441,
+      "sha256": "6f1ee98c361f8e721f2a0d9863da194329e48bc9eec25eac377f1c4518ca5712",
+      "files": 772,
+      "signature": "54dfc0a34ae648328c053e9be0c5d5dcad42fd98e94e5aa6c6a684ff512fe55a",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-010.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-011.zip",
+      "bytes": 498042511,
+      "sha256": "dd3bb07e098c8c43a60d632b51beaa1439610b23e618ca4b5a4093341dc9077b",
+      "files": 579,
+      "signature": "b24b2c2a63dd204fd56a331fc2c8e0bd39c32daab80f7ee5dad88d3aab2b9e92",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-011.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-012.zip",
+      "bytes": 462748640,
+      "sha256": "615b6535198f0bc72f4b88915cbe2abab6f91b97777fe1c08933a252c16858e2",
+      "files": 1544,
+      "signature": "495d4d8ee92c59c61924abdc598c4105d4e423c7a0f5af5f325abce3316f62ff",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-012.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-013.zip",
+      "bytes": 474029626,
+      "sha256": "bcb359ba664be8e0554ca1645cfc92879cc75bc7dd88a44c4164ff40f1a78550",
+      "files": 965,
+      "signature": "cb22d2b7d361660f1a32828e0c7625c6c1f99585eacaf0e3ef0c48259483ae4b",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-013.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-014.zip",
+      "bytes": 506179466,
+      "sha256": "ce177c78e1ca44d8d6b30caec3bd6f79239c5c78696634b7b00881afcf2f7c72",
+      "files": 1158,
+      "signature": "afc6ba5927b8933f45be06afb514a5b5058288bc18d8087c77f88b1faf8a04f9",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-014.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-015.zip",
+      "bytes": 462090697,
+      "sha256": "e53e68411842bd1c2c29e96012fe664aea81930d9cabe013372e354cb391069f",
+      "files": 965,
+      "signature": "a70db1af14ba11312ae6744970d98cf3f63b15b05ad0d58c1d9e761ea05e847e",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-015.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-016.zip",
+      "bytes": 449887797,
+      "sha256": "381ac55ff418ee455818d97557b19cdab4d4f48289b7fe3fe7385d78c1d3262c",
+      "files": 1538,
+      "signature": "f86d81afa1e8ea4eea8015b379a23a22fd08b67f6886c9dfb1b5fe3a88fb5717",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-016.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-017.zip",
+      "bytes": 404146192,
+      "sha256": "d2889179180af262952b4700c900e5a500184f120a7bd5942f8e9992e632b4f4",
+      "files": 1538,
+      "signature": "426251d9c848ec6d2f0e6c12831b7be334a684e85c2c06316c3e942358688a69",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-017.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-018.zip",
+      "bytes": 459654021,
+      "sha256": "d91d91ed57f897281104415ab5dd697e59ed4dfc06d652720ac361b0fe782130",
+      "files": 1538,
+      "signature": "39a3f02140a0e3e6ede3cec5df1b29bc32e8bf8d333f2379bced4da33820e5a0",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-018.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-019.zip",
+      "bytes": 484787544,
+      "sha256": "00b949b698ffcd4b59bc288417062e91de4cb202a47105461559bbe54c460f02",
+      "files": 772,
+      "signature": "21f61c1475a091c57ca5a0a84e69db00f7818fff3c1ac7286afc3aef36d4ff8f",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-019.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-020.zip",
+      "bytes": 510214200,
+      "sha256": "8f07754037e052351a98fcedc2ad7df0ad7ba6dad1e094130f091ce0c37798bd",
+      "files": 1158,
+      "signature": "1e7e111599213d08945944b0339cbd8f7caa0d53d5a49d46328f1667be55a8ba",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-020.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-021.zip",
+      "bytes": 525115684,
+      "sha256": "dd27e7378f5098bbfb4cff7bd62aac2cc4101a32f97acd92382f57db7969e689",
+      "files": 1544,
+      "signature": "d525dc758d2a29a21d4eebe06c8c91ad2503d415b59b21a5f2e93439e0233b31",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-021.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-022.zip",
+      "bytes": 516488449,
+      "sha256": "2f11f24f71e5410b9169bea9db19c8d8199bd15a30ccd17bf3f67fe0412945f0",
+      "files": 1544,
+      "signature": "a603417af322daa4d9ba85df50b16fcff650a56547de97d791f352b9f711a854",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-022.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-023.zip",
+      "bytes": 426298674,
+      "sha256": "55b85c7d7b52ebd9c280db041fef96d2fc180ea93d8220ce6f6fa30bfa0bac0d",
+      "files": 1158,
+      "signature": "c6af1911687c4e108809f02e51b5cfaf21497e030b7dc1aeeada3a290e3610cc",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-023.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-024.zip",
+      "bytes": 337144696,
+      "sha256": "c7be88cd46bb97c2034f56f4508b6eb57f5de20f25c48dd3ad3532d887c17600",
+      "files": 193,
+      "signature": "3a37b4801997dd9782147f34d66c5d7f07b30805f3f878314b30933151cbb708",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-024.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "observations",
+      "name": "observations-v1.0.0-025.zip",
+      "bytes": 337137994,
+      "sha256": "be7d0f1f05877bf3ca8f8378f287187ab0e60345a9b4ae5a9780b343dab7dc5e",
+      "files": 193,
+      "signature": "981290a46512ea48bbe8d28eac39bf33044d797babf9cae4e7d4f73d36cf107d",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/observations-v1.0.0-025.zip",
+      "all_members_crc_and_sha256_verified": true
+    },
+    {
+      "family": "metadata",
+      "name": "metadata-v1.0.0-001.zip",
+      "bytes": 2728456,
+      "sha256": "792b2c560be0dd42bb2a4f79835227a07447f7411a918b4ce706d32385ef675b",
+      "files": 13,
+      "signature": "5b0be106700c6a5445c8a505b1bae2cd3a987ac28e0a1c00ace23b061c556254",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v1.0.0/metadata-v1.0.0-001.zip",
+      "all_members_crc_and_sha256_verified": true
     }
   ],
-  "accepted_case_inventory": "accepted_cases.jsonl",
-  "full_dataset_download_available": false,
-  "evaluation_GT_included": false
+  "public_payload_bytes": 22948957506,
+  "compressed_archive_bytes": 19531658225,
+  "publication_status": "uploading_verified_draft_assets"
 }

@@ -7,13 +7,13 @@ from .validate import distance_scene,read_mesh,distances,independent_backproject
 
 def source_factors(sid):
     gt=ROOT/f'private/gt/{sid}';ref,info=geometry_reference(sid);cams=load_json(gt/'cameras.json')['cameras'];poses=load_json(gt/'placements.json')['placements'];meta=load_json(gt/'metadata.json');vis=ref['camera_visibility'];contact=ref['contact'][0]
-    rows=[]
-    for placements,stride,kind in [(n,4,'fixed_49_frames_vary_placements') for n in range(1,len(poses)+1)]+[(1,s,'fixed_first_placement_vary_density') for s in [4,2,1]]:
+    rows=[];intervals=max(c['mother_frame_id'] for c in cams)
+    for placements,stride,kind in [(n,4,f'fixed_{intervals//4+1}_frames_vary_placements') for n in range(1,len(poses)+1)]+[(1,s,'fixed_first_placement_vary_density') for s in [4,2,1]]:
         indices=[i for i,c in enumerate(cams) if c['placement_id']<placements and c['mother_frame_id']%stride==0];mask=vis[indices].any(0);ov=[]
         for pid in range(placements):
             ids=[i for i in indices if cams[i]['placement_id']==pid]
             ov.extend(float((vis[a]&vis[b]).sum()/max(1,vis[a].sum(),vis[b].sum())) for a,b in zip(ids[:-1],ids[1:]))
-        rows.append({'factor':kind,'placements':placements,'frames_per_placement':193//stride+int(stride>1),'surface_fraction':float(mask.mean()),'initial_contact_visible_fraction':float(mask[contact].mean()) if contact.any() else None,'adjacent_overlap_p10':float(np.quantile(ov,.1))})
+        rows.append({'factor':kind,'placements':placements,'frames_per_placement':intervals//stride+1,'surface_fraction':float(mask.mean()),'initial_contact_visible_fraction':float(mask[contact].mean()) if contact.any() else None,'adjacent_overlap_p10':float(np.quantile(ov,.1))})
     scale={'millimetre':1.,'millimeter':1.,'metre':1000.,'meter':1000.,'centimetre':10.,'centimeter':10.,'inch':25.4,'foot':304.8}
     units=meta['source_length_units'];unknown=[u for u in units if u.lower() not in scale]
     if unknown:raise ValueError(f'unit conversion needs explicit interpretation: {unknown}')

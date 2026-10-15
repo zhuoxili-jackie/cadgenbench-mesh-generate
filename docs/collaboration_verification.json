@@ -1,23 +1,93 @@
 {
   "status": "pass",
-  "physics_tests": {
-    "passed": 5,
-    "command": "python -m pytest tests/test_physics.py -q"
+  "version": "v1.0.0",
+  "actual_cases": 174,
+  "part_groups": 29,
+  "native_sources": 24,
+  "official_mesh_approx_sources": 5,
+  "excluded_sources": 3,
+  "public_preview_images": 174,
+  "same_part_easy_medium_hard_directly_inspected": {
+    "status": "pass",
+    "comparison_sha256": "149710970cf7d617bf02b62884412b0e2b1e693a17cfd98bd82ac46b6429f31e",
+    "same_part_same_seed": true,
+    "ordering": [
+      "easy",
+      "medium",
+      "hard"
+    ],
+    "placements": [
+      3,
+      2,
+      1
+    ],
+    "frames_per_placement": [
+      193,
+      97,
+      49
+    ],
+    "views": "two opposing oblique views, same frame and scale",
+    "all_actual_mesh_triangles_rendered": true,
+    "direct_observations": "Hard lacks the initial tabletop contact surface; the reverse side is visible through this opening. Easy and medium have the flipped surface. Small measured meshing pores remain visible.",
+    "GT_images_used": false,
+    "time": 1792047796.1894777
   },
-  "ignored_large_and_private_directories_verified": [
-    "data/observations/sample.npz",
-    "private/gt/sample.step",
-    "cache/fusion.npz",
-    ".venv/pyvenv.cfg",
-    "tests/artifacts/control.step",
-    "sources/218/input.step",
-    "downloads/full.zip",
-    "runs/new/mesh.stl"
-  ],
-  "code_copy_hashes_verified": 155,
-  "staged_files": 171,
-  "staged_bytes": 16220469,
-  "sample_mesh_bytes_preserved": true,
-  "preview_directly_inspected": true,
-  "generation_goal_remains_paused": true
+  "README_animation": {
+    "status": "pass",
+    "path": "collaboration/cadgenbench-mesh-generate/examples/three_levels/rotation.gif",
+    "sha256": "3372be95ffc6ec3ccb8480305282bfbf0e125118ff82a84941331995f6240b21",
+    "bytes": 3842938,
+    "frames": 48,
+    "unique_rendered_frames": 48,
+    "duration_ms": 120,
+    "loop_seconds": 5.76,
+    "dimensions": [
+      960,
+      802
+    ],
+    "source_meshes_sha256": {
+      "case_3000584756354796": "bfa6b8a768083d30ec16da35078f54dd798cf5dc04576d9c59652e9215e605a8",
+      "case_464615fa87a6774b": "3b2f56c42d82f9bcdb0ea7fd5fc2d09efd3e5679c0a16a0e3bb17f33d492087b",
+      "case_2438b1a3fd780c63": "ad53fc790ac7528d53b019a6d7f8b0dce8238e432499b27ae084bdb3e610d92a"
+    },
+    "same_camera_per_frame_across_levels": true,
+    "same_scale_and_canonical_coordinates": true,
+    "all_triangles_rendered": true,
+    "GT_geometry_or_images_used": false,
+    "time": 1792048154.75007,
+    "directly_inspected_frames": [
+      0,
+      16,
+      32
+    ]
+  },
+  "physics_tests": {
+    "exit_code": 0,
+    "command": "python -m pytest tests/test_physics.py -q",
+    "log_sha256": "03a3bb42a32911ffff76e4f2806f0e79a502aa9a7c3001ab3a8ae5b894577633"
+  },
+  "downloader_controls": {
+    "unsafe_paths_rejected": 5,
+    "auth_removed_on_cross_host_redirect": true,
+    "valid_archive_extracted_and_sha256_checked": true,
+    "actual_corrupt_payload_rejected": true,
+    "actual_traversal_archive_rejected": true
+  },
+  "released_case_rebuild": {
+    "status": "pass",
+    "case_id": "case_2438b1a3fd780c63",
+    "fresh_directory": "collaboration/releases/v1.0.0/consumer_rebuild",
+    "no_existing_mesh_supplied": true,
+    "forbidden_original_data_private_source_reads": 0,
+    "PLY_and_STL_SHA256_exact": true,
+    "actual_access_audit_sha256": "7a1f9f3a4e8dc175ff5803f1c44f9f1e95746c8d0a7bbe34692ed37063757e9b"
+  },
+  "frozen_core_copies_byte_identical": 21,
+  "code_copy_hashes_verified": 177,
+  "all_archives_members_crc_and_sha256_verified": true,
+  "all_large_and_private_paths_ignored": true,
+  "no_literal_credentials_found": true,
+  "authoritative_generation_data_modified": false,
+  "time": 1792049168.4388468,
+  "seconds": 6.51176381111145
 }

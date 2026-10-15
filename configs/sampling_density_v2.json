@@ -1,0 +1,29 @@
+{
+  "schema": "uniform_sampling_density_v2",
+  "status": "frozen",
+  "protocol": "physical_scan_v2_overlap_density",
+  "base_config_sha256": "6d3a3dfdaeafe025f2b4fb0f27dcdf544569fcc570816b25c3fb849bc1815dfb",
+  "base_intervals": 192,
+  "allowed_multipliers": [
+    1,
+    2,
+    4,
+    8
+  ],
+  "source_intervals": {
+    "245": 768
+  },
+  "overlap_p10_min": 0.5,
+  "quality_gates_changed": false,
+  "noise_frame_parameterization": "exact rational parameter on original mother grid; original integer stream IDs preserved",
+  "affected_geometry_or_acquisition_sources": [
+    "245"
+  ],
+  "basis": {
+    "245": {
+      "path": "reports/density_investigations/245/density_investigation.json",
+      "sha256": "db11ee87bcf981333104c625145c72d9f5dfb4575ec847666d6eca4f51e4ebce"
+    }
+  },
+  "note": "All other qualified sources retain exactly their existing 192-interval trajectories and observations. New protocol version and public per-case sampling contracts make the density explicit."
+}

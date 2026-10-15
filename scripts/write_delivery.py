@@ -4,16 +4,30 @@ import sys,os,datetime,argparse
 ROOT=Path(__file__).resolve().parents[1];sys.path.insert(0,str(ROOT/'src'));os.chdir(ROOT)
 from scanbench.common import *
 from scanbench.reporting import report
-p=argparse.ArgumentParser();p.add_argument('--goal-seconds',type=float,required=True);args=p.parse_args();summary=report();audit=load_json(ROOT/'reports/final_audit.json');assert summary['status']=='complete' and audit['status']=='pass'
+from build_stage_resources import build as build_stage_resources
+p=argparse.ArgumentParser();p.add_argument('--goal-seconds',type=float,required=True);p.add_argument('--goal-active-seconds',type=float);args=p.parse_args();summary=report();audit=load_json(ROOT/'reports/final_audit.json');assert summary['status']=='complete' and audit['status']=='pass'
+stage_resources=build_stage_resources()
 perf=load_json(ROOT/'reports/performance.json');sources=[json.loads(s) for s in (ROOT/'manifests/sources.jsonl').read_text(encoding='utf-8').splitlines()];cases=[json.loads(s) for s in (ROOT/'manifests/cases.jsonl').read_text(encoding='utf-8').splitlines()];cfg=config();tiers=summary['tiers'];totalbytes=sum(p.stat().st_size for p in ROOT.rglob('*') if p.is_file());publicbytes=sum(p.stat().st_size for p in (ROOT/'data').rglob('*') if p.is_file());peak=max((x['max_peak_rss_bytes'] for x in perf['stages'].values()),default=0);events=[json.loads(s) for s in (ROOT/'state/events.jsonl').read_text(encoding='utf-8').splitlines() if s.strip()];successful_attempt_seconds=sum(e.get('metrics',{}).get('seconds',0) for e in events if e.get('event')=='stage_complete');runtime={'goal_elapsed_seconds_at_delivery':args.goal_seconds,'historical_completed_stage_attempt_seconds':successful_attempt_seconds,'note':'goal wall time includes implementation, calibration, waits, tests and audits; completed-stage sum includes superseded calibration stages but not unfinished attempts or uninstrumented work','whole_project_bytes':totalbytes,'public_data_including_reconstruction_caches_bytes':publicbytes,'peak_measured_worker_rss_bytes':peak,'disk_free_bytes':__import__('shutil').disk_usage(ROOT).free};atomic_json(ROOT/'reports/execution_resources.json',runtime)
 peak=max([peak]+[e.get('metrics',{}).get('peak_rss_bytes',0) for e in events if e.get('event')=='stage_complete'])
 successful_attempt_seconds=sum(e.get('metrics',{}).get('seconds',0) for e in events if e.get('event')=='stage_complete' and not e.get('metrics',{}).get('equivalent_camera_builder_migration'))
 runtime.update(historical_completed_stage_attempt_seconds=successful_attempt_seconds,peak_measured_worker_rss_bytes=peak)
+runtime.update(goal_tool_active_seconds_at_delivery=args.goal_active_seconds,wall_time_includes_user_requested_pause_and_discussion=True)
+runtime.update(initial_project_target_gib=cfg['resources']['project_target_gib'],actual_project_above_initial_target=totalbytes>cfg['resources']['project_target_gib']*2**30,system_free_above_reserved_minimum=runtime['disk_free_bytes']>=cfg['resources']['reserve_gib']*2**30,storage_scope_note='Logical file sizes include required original observations, all Mesh outputs, immutable historical revisions and isolated real verification artifacts; derived reconstruction caches are excluded from distribution assets.')
+active_time_text=f'goal 工具累计活动时间 {args.goal_active_seconds/3600:.2f} 小时；' if args.goal_active_seconds is not None else ''
 atomic_json(ROOT/'reports/execution_resources.json',runtime)
 limited='；'.join(f'{x["source_id"]}：{x["actual_placements"]} 次' for x in audit['limited_placements']) or '无'
 discrete='；'.join(f'{x["source_id"]}/姿态 {x["placement_id"]}：{x["certified_contact_points"]} 个认证接触点，COM 余量 {x["COM_margin_mm"]:.3f} mm' for x in audit.get('certified_discrete_supports',[])) or '无'
 frozen=load_json(ROOT/'reports/protocol_freeze.json')
 implementation=frozen.get('implementation_revision','initial')
+sampling=audit['physical_sampling_revision'];assert sampling['status']=='pass' and sampling['phase']=='full_current_batch'
+sampling_policy=load_json(ROOT/'configs/sampling_density_v2.json')
+sampling_version=sampling_policy['protocol']
+sampling_overrides='; '.join(f'{sid}: {intervals} intervals ({intervals//4+1}/{intervals//2+1}/{intervals+1} frames per placement for hard/medium/easy)' for sid,intervals in sorted(sampling_policy['source_intervals'].items()))
+sampling_table='| 源件 | 母轨迹间隔数 | hard 每放置帧数 | medium 每放置帧数 | easy 每放置帧数 |\n|---|---:|---:|---:|---:|\n'
+for sid in sorted(summary['six_case_complete_sources']):
+    example=next(c for c in cases if c['source_id']==sid)
+    contract=load_json(ROOT/example['input_path']/'sampling_contract.json');intervals=contract['mother_intervals']
+    sampling_table+=f'| {sid} | {intervals} | {intervals//4+1} | {intervals//2+1} | {intervals+1} |\n'
 continuous=audit['continuous_free_space_correction'];preservation=continuous['baseline_preservation']
 validity=audit['source_validity_diagnostics'];parameter_warning_sources=', '.join(validity['extra_exact_parameter_warnings']) or '无'
 parameter_table='| 源件 | 同参数最大距离 mm | 曲线几何最近距离的采样最大值 mm | 检查的边/面组合 | 证据 |\n|---|---:|---:|---:|---|\n'
@@ -47,23 +61,32 @@ $env:NUMBA_NUM_THREADS='2'
 py -3.12 -m venv .venv
 .\\.venv\\Scripts\\python.exe -m pip install -r requirements.lock
 .\\.venv\\Scripts\\python.exe scripts/bootstrap.py doctor
-# 固定官方版本全部源件；已有合格阶段按 hash 复用
+# 完整批次入口；本次先执行全源件驱动，诊断后按源件恢复，已有合格阶段按 hash 复用。
+# 该命令默认覆盖全部 32 个官方源件，不会把尚未处理的异常自动变成排除。
 .\\.venv\\Scripts\\python.exe scripts/run_full.py --resume
+# 本次后段已执行的精确恢复命令（前者对应 logs/remaining_unaffected_246_250.log）：
+.\\.venv\\Scripts\\python.exe scripts/run_full.py --resume --ids 246 247 248 249 250
+.\\.venv\\Scripts\\python.exe scripts/run_full.py --resume --ids 245
 # 独立验收：不生成或修改 Mesh
 .\\.venv\\Scripts\\python.exe scripts/scanbench.py validate --all
 .\\.venv\\Scripts\\python.exe scripts/supplemental_audit.py --all
 .\\.venv\\Scripts\\python.exe scripts/final_audit.py
-# 以下两条已实际执行，exported_case_r4 保留了当前实现的输出和访问审计。
-# 再执行时使用完整工程副本，或将两条命令的 exported_case_r4 换成新的空目录名。
-.\\.venv\\Scripts\\python.exe scripts/scanbench.py export-case --case-ids case_2438b1a3fd780c63 --output exported_case_r4 --observations-only
-.\\.venv\\Scripts\\python.exe exported_case_r4/rebuild.py
+# 以下两条已实际执行，exported_case_sampling_v2 保留了当前实现的输出和访问审计。
+# 再执行时使用完整工程副本，或将两条命令的 exported_case_sampling_v2 换成新的空目录名。
+.\\.venv\\Scripts\\python.exe scripts/scanbench.py export-case --case-ids case_2438b1a3fd780c63 --output exported_case_sampling_v2 --observations-only
+.\\.venv\\Scripts\\python.exe exported_case_sampling_v2/rebuild.py
+# 当前采样 v2：从原始 STEP 开始的完整单例复现，实际比较观测数组和 Mesh 顶点/连接。
+.\\.venv\\Scripts\\python.exe scripts/test_current_step_reproduction.py
 # 本次已实际执行的证据实验：完整 STEP 复现、真实中断恢复、无变更恢复
 # 前两条在有效签名存在时复用证据；第三条会更新冻结的测试报告。
 # 如需重做这组实验，在完整工程副本中运行；上方 export-case 可直接生成新的独立 Mesh。
 .\\.venv\\Scripts\\python.exe scripts/run_reproduction_r4.py
 .\\.venv\\Scripts\\python.exe scripts/run_mesh_resume_r4.py
 .\\.venv\\Scripts\\python.exe scripts/test_production_resume_r4.py
-```\n'''
+```
+
+入口与作用域：`bootstrap.py doctor` 记录环境；`run_full.py --resume` 默认按固定清单逐件处理全部 32 件，包含来源、GT/放置、观测、六例生成与验收；`--ids` 明确限制源件。历史 pilot 在 218 首件之后运行 `.\\.venv\\Scripts\\python.exe scripts/run_pilot_remaining.py`，仅补 229/231 并核对 218，完成日志为 `logs/pilot_remaining_v6.log`。`validate --all` 与 `supplemental_audit.py --all` 只验收完整当前批次，不生成 Mesh；缺关键源件/案例会返回非零。独立单例重建入口为导出目录的 `rebuild.py`，上方两条实测命令已涵盖公开输入导出与重建。当前状态报表入口是 `.\\.venv\\Scripts\\python.exe scripts/report_progress.py`；本次实际已多次执行，最终文档由 `write_delivery.py` 在全量独立验收后生成，再用 `.\\.venv\\Scripts\\python.exe scripts/verify_delivery_documents.py` 核查。环境报告、报表与历史测试重做应在完整工程副本中进行，以保留本次冻结证据及交付文件。
+\n'''
 body=f'''# CADGenBench 物理扫描与破损 Mesh 最终报告
 
 完成固定版本 `{REV}` 的全部 32 个公开 STEP 判定。native {len(tiers['eligible_native'])} 件，官方 Mesh 近似层 {len(tiers['eligible_official_mesh_approx'])} 件，排除 {len(tiers['source_excluded'])} 件；六例完整源件 {len(summary['six_case_complete_sources'])} 件，正式案例 {summary['verified_case_count']} 例。当前全量独立验收通过，无未处理 failed/pending。
@@ -83,9 +106,13 @@ body=f'''# CADGenBench 物理扫描与破损 Mesh 最终报告
 
 ## 物理和重建协议
 
-物理参数与质量门限保持 pilot 冻结版本；当前实现修订为 `{implementation}`。修订及其兼容性、缓存复用证据：{amendments}。初始冻结代码和当前代码快照均保留，详见 [protocol_freeze.json](protocol_freeze.json)。
+当前物理采样版本为 `{sampling_version}`，实现修订为 `{implementation}`。源件 245 的原 hard 相邻重叠不足后，按任务书沿完整螺旋均匀加密并单独冻结新版本；噪声、重建和质量门限保持不变。实现修订及兼容性证据：{amendments}。采样版本、原始冻结和当前代码快照见 [protocol_freeze.json](protocol_freeze.json) 与 [采样修订](protocol_amendments/r5_sampling_density/amendment.json)。
 
-毫米制，不归一化尺寸。OCP 拓扑离散优先使用 0.02 mm 弦差和 0.15 rad 角差；实际参数、替代尝试、STEP 单位与原离散精度按源件记录。每次放置均通过精确 BREP 桌面高度、接触面积与重心支撑检查。相机从 75° 向 5° 绕完整三圈，持续看向中心；桌面与物体比较首次命中，接触面不作为扫描返回。母轨迹 193 帧，hard/medium/easy 每放置 49/97/193 帧，默认 1/2/3 次放置；同帧、同种子观测跨档完全共享。
+毫米制，不归一化尺寸。OCP 拓扑离散优先使用 0.02 mm 弦差和 0.15 rad 角差；实际参数、替代尝试、STEP 单位与原离散精度按源件记录。每次放置均通过精确 BREP 桌面高度、接触面积与重心支撑检查。相机从 75° 向 5° 绕完整三圈，持续看向中心；桌面与物体比较首次命中，接触面不作为扫描返回。默认母轨迹 193 帧，hard/medium/easy 每放置 49/97/193 帧，默认 1/2/3 次放置；有依据的均匀加密见下表。同帧、同种子观测跨档完全共享。每例公开 `sampling_contract.json` 给出实际间隔数、帧数、放置次数和冻结策略 hash。
+
+{sampling_table}
+
+未加密的 {sampling['unchanged_source_count']} 件 / {sampling['unchanged_case_count']} 例保留原始相机、观测、工作点、Mesh 与缓存。原数值检查函数 AST 相同，实际旧输入完整 hash 一致，物理检查重新执行且结果完全一致后，才更新阶段和验收元数据；旧验收原件完整归档。加密源件的旧相机位置使用原整数噪声键，新位置使用原母网格的精确有理参数键，已有噪声载荷不变。独立全量复核见 [采样迁移核查](protocol_amendments/r5_sampling_density/full_independent_audit.json)。
 
 噪声是沿单位射线的 Euclidean range 高斯噪声，σ=`clip(0.0002D, 0.01, 0.10)` mm，截断于 ±3σ。固定 SplitMix64/Box–Muller 键包含源件、种子、姿态、母帧和像素，两个种子为 20261014 与 20261015。
 
@@ -135,10 +162,16 @@ native：{', '.join(tiers['eligible_native']) or '无'}。
 
 ## 资源与复现
 
-截至交付记录，从 goal 创建起实际经过 {args.goal_seconds/3600:.2f} 小时；已完成阶段历史计时总和 {successful_attempt_seconds/3600:.2f} 小时（包含校准），单工作进程实测峰值 RSS {peak/2**30:.3f} GiB。整个工程含虚拟环境、复现实验与缓存 {totalbytes/2**30:.3f} GiB；`data` 含重建缓存 {publicbytes/2**30:.3f} GiB。生产按单源件、单案例串行，数值库 2 线程，保留至少 {cfg['resources']['reserve_gib']} GiB 系统空闲；只读辅助诊断与验收在内存余量足够时并行运行。提前进行的连续自由空间独立核查先实测单例成本，并在每例启动前要求至少 3 GiB 可用内存，逐次资源记录保留在 `reports/operations/ready_continuous_*.json`。205 处理期间观察到跨案例内存滞留后，后续源件改为每例独立子进程，案例结束即释放进程内存；冻结的数值算法不变，执行逻辑一致性与真实缓存复用证据见 [case_process_isolation/proof.json](operations/case_process_isolation/proof.json)。详见 [execution_resources.json](execution_resources.json)、[performance.json](performance.json)、[environment.json](environment.json)。
+初始工程磁盘目标为 {cfg['resources']['project_target_gib']} GiB。实际工程保留全部观测、Mesh、不可变修订原件和隔离验收实验，当前逻辑文件总量为 {totalbytes/2**30:.3f} GiB；系统盘实测空闲 {runtime['disk_free_bytes']/2**30:.3f} GiB，保留门限为 {cfg['resources']['reserve_gib']} GiB。分发资产排除可再生重建缓存，完整工程中的有效阶段与证据保持可回读。
+
+逐例资源记录位于 `private/annotations/<case_id>/resources.json`，关联 [实际阶段资源索引](stage_resources.json) 中的阶段输入 hash、原始计时/RSS、当前产物字节及共享观测引用。各例重建、数值验收和渲染均有实测时间/RSS；共享源件处理、历史测量与未单独计量的元数据组装明确区分，未把缺测填成零，也未把当前文件大小称为历史磁盘峰值。
+
+当前采样 v2 另从 STEP 独立重做一例，重新确定分辨率、姿态和相机，比较约 {load_json(ROOT/'reports/tests/full_case_reproduction_sampling_v2.json')['observed_pixels_compared']:,} 个真实观测返回及实际 Mesh 顶点/连接，均严格一致。新证据见 [当前版本 STEP 复现](tests/full_case_reproduction_sampling_v2.json)；原 r4 复现与恢复实验仍完整保留。
+
+截至交付记录，从 goal 创建起实际经过 {args.goal_seconds/3600:.2f} 小时（含用户要求的暂停与协作讨论）；{active_time_text}已完成阶段历史计时总和 {successful_attempt_seconds/3600:.2f} 小时（包含校准），单工作进程实测峰值 RSS {peak/2**30:.3f} GiB。整个工程含虚拟环境、复现实验与缓存 {totalbytes/2**30:.3f} GiB；`data` 含重建缓存 {publicbytes/2**30:.3f} GiB。生产按单源件、单案例串行，数值库 2 线程，保留至少 {cfg['resources']['reserve_gib']} GiB 系统空闲；只读辅助诊断与验收在内存余量足够时并行运行。提前进行的连续自由空间独立核查先实测单例成本，并在每例启动前要求至少 3 GiB 可用内存，逐次资源记录保留在 `reports/operations/ready_continuous_*.json` 和 `reports/operations/completed_case_snapshot_*.json`。205 处理期间观察到跨案例内存滞留后，后续源件改为每例独立子进程，案例结束即释放进程内存；冻结的数值算法不变，执行逻辑一致性与真实缓存复用证据见 [case_process_isolation/proof.json](operations/case_process_isolation/proof.json)。详见 [execution_resources.json](execution_resources.json)、[performance.json](performance.json)、[environment.json](environment.json)。
 
 {commands}
-正式状态由 SQLite 原子阶段和实际文件 hash 决定，不从旧日志累加案例数。导出命令只携带公开观测、相机、参数与重建代码；导出的 `rebuild.py` 拒绝已有非空重建输出目录。上述导出与重建命令已在空目录实际执行，几何顶点和面连接完全一致，原工程 private/sources/data 路径读取为零，见 [交付命令实测](operations/delivery_export_command_r4.json)。当前完整导出与重建结果保留在 `exported_case_r4/`；`exported_case/` 保留先前实现的历史证据。已有测试证据按当前代码/输入签名复用，删除产物或篡改数据不会被当作有效缓存。
+正式状态由 SQLite 原子阶段和实际文件 hash 决定，不从旧日志累加案例数。导出命令只携带公开观测、相机、参数与重建代码；导出的 `rebuild.py` 拒绝已有非空重建输出目录。上述导出与重建命令已在空目录实际执行，几何顶点和面连接完全一致，原工程 private/sources/data 路径读取为零，见 [交付命令实测](operations/delivery_export_command_sampling_v2.json)。当前完整导出与重建结果保留在 `exported_case_sampling_v2/`；`exported_case/` 保留先前实现的历史证据。已有测试证据按当前代码/输入签名复用，删除产物或篡改数据不会被当作有效缓存。
 
 工作止于破损 Mesh 数据生成与验收，未启动 e2e script generation、repair、SCA/CQ、Harbor 或 RSI。
 '''
@@ -151,7 +184,7 @@ Status: complete. All 32 official STEP sources were attempted at revision `{REV}
 
 Public cases are under `data/cases/<opaque_case_id>/input/`; observations are shared by content hash under `data/observations/`. `private/` and source mappings are evaluation-only. Hidden `.reconstruction_cache/` directories contain derived public-observation intermediates and are not required input assets; export-case omits them.
 
-Each input includes shared-vertex PLY, STL, observed working points, per-point camera/pixel provenance, camera matrices, range-observation references, complete reconstruction settings and protocol hash. No GT geometry or GT normals are read by reconstruction.
+Each input includes shared-vertex PLY, STL, observed working points, per-point camera/pixel provenance, camera matrices, range-observation references, complete reconstruction settings, protocol hash and an explicit `sampling_contract.json`. Physical sampling version: `{sampling_version}`. Default mother-grid intervals: 192. Evidenced uniform refinements: {sampling_overrides}. No GT geometry or GT normals are read by reconstruction.
 
 {commands}
 Windows shell execution used PTY without login. Background test workers were hidden. Existing GLM projects and old data were left unchanged.
@@ -163,7 +196,7 @@ This local dataset simulates partial physical tabletop scans of fixed public CAD
 
 Upstream: HuggingAI4Engineering / CADGenBench / Mecado, [fixed source revision](https://huggingface.co/datasets/HuggingAI4Engineering/cadgenbench-data/tree/{REV}), ODC-BY. The upstream editing instructions were not executed; input.step is used as original geometry. SHA256 is verified against the official LFS inventory. See LICENSES.md for attribution and third-party notices.
 
-Physical settings and quality gates retain their pilot freeze. Current implementation revision: `{implementation}`. The [freeze manifest](reports/protocol_freeze.json) binds both the original code archive and tested implementation corrections, including exact compatibility and qualified cache-reuse evidence.
+Physical sampling version: `{sampling_version}`. Base path geometry, noise, reconstruction and quality gates retain their pilot values; evidenced uniform path-density refinements are frozen separately: {sampling_overrides}. Current implementation revision: `{implementation}`. Each case records its actual sampling in `sampling_contract.json`. The [freeze manifest](reports/protocol_freeze.json) binds original and current code, the sampling policy, controls, exact compatibility and qualified cache-reuse evidence.
 
 Use: controlled tests of algorithms consuming genuinely incomplete, noisy, observed geometry. Data represents exact poses and ideal segmentation. It does not model reflectance, photometric failure, motion blur, drift or a calibrated commercial scanner. No repair/modeling task was performed.
 

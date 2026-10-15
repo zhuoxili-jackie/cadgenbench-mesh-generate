@@ -1,0 +1,81 @@
+{
+  "dataset_version": "v1.0.0",
+  "status": "all_174_cases_independently_accepted",
+  "sources_attempted": 32,
+  "native_sources": 24,
+  "official_mesh_approx_sources": 5,
+  "excluded_sources": 3,
+  "six_case_sources": 29,
+  "cases": 174,
+  "cases_per_difficulty": 58,
+  "mandatory_current_test_reports": 21,
+  "all_required_current_tests_pass": true,
+  "independent_continuous_geometry_audits": 174,
+  "public_preview_images": 174,
+  "quality_by_difficulty": {
+    "medium": {
+      "mesh_support": {
+        "min": 0.9994666666666666,
+        "mean": 0.9999517241379311,
+        "max": 1.0
+      },
+      "observed_retention": {
+        "min": 0.9630333333333333,
+        "mean": 0.9934218390804598,
+        "max": 0.9999666666666667
+      },
+      "GT_coverage": {
+        "min": 0.5295333333333333,
+        "mean": 0.9037597701149426,
+        "max": 0.9999666666666667
+      }
+    },
+    "easy": {
+      "mesh_support": {
+        "min": 0.9992666666666666,
+        "mean": 0.9999551724137931,
+        "max": 1.0
+      },
+      "observed_retention": {
+        "min": 0.9567,
+        "mean": 0.9930528735632184,
+        "max": 0.9999
+      },
+      "GT_coverage": {
+        "min": 0.5300333333333334,
+        "mean": 0.9099362068965517,
+        "max": 0.9998666666666667
+      }
+    },
+    "hard": {
+      "mesh_support": {
+        "min": 0.9982666666666666,
+        "mean": 0.9997712643678163,
+        "max": 1.0
+      },
+      "observed_retention": {
+        "min": 0.9658,
+        "mean": 0.9836724137931036,
+        "max": 0.9935666666666667
+      },
+      "GT_coverage": {
+        "min": 0.3786,
+        "mean": 0.7059959770114943,
+        "max": 0.9228
+      }
+    }
+  },
+  "authoritative_local_final_audit_sha256": "1c6bdae576a81f8a24078f756e3f1cb9b4d84f131ca995fa715287c0f1612bdf",
+  "authoritative_local_delivery_verification_sha256": "5b360cc70c91068de2061e7a69a5959ae34404806301024e45c201f2ff112f89",
+  "current_STEP_reproduction": {
+    "path": "reports/tests/full_case_reproduction_sampling_v2.json",
+    "status": "pass",
+    "physical_protocol": "physical_scan_v2_overlap_density",
+    "actual_observed_returns_recompared": 3973942,
+    "actual_geometry_and_connectivity_recompared": true
+  },
+  "physical_protocol": "physical_scan_v2_overlap_density",
+  "implementation_revision": "r4_continuous_free_space",
+  "case_source_mapping_and_GT": "not in Git or public release payloads",
+  "note": "Sampled engineering acceptance at declared per-case tolerances; not exact global Hausdorff or CAD-parameter certification."
+}

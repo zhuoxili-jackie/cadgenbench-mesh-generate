@@ -4,6 +4,7 @@ import numpy as np
 import open3d as o3d
 from .common import *
 from .camera import pixel_directions,trajectory
+from .sampling_density import source_scan_settings,noise_frame_key
 
 def scene_for(vertices,faces,threads=2):
     scene=o3d.t.geometry.RaycastingScene(nthreads=threads)
@@ -46,7 +47,7 @@ def observation_hash(pixel,ranges):
 
 def prepare_cameras(sid,state):
     gt=ROOT/f'private/gt/{sid}'; mesh=np.load(gt/'mesh.npz'); meta=load_json(gt/'metadata.json'); placements=load_json(gt/'placements.json')
-    cfg=config()['scan']; features=load_json(gt/'features.json')
+    cfg=source_scan_settings(sid); features=load_json(gt/'features.json')
     D=meta['diagonal_mm']; sigma=float(np.clip(cfg['sigma_relative']*D,cfg['sigma_min_mm'],cfg['sigma_max_mm']))
     cylinders=[f for f in features if f['type']=='cylinder' and f['radius_mm']>0]
     # Private feature contract: smallest cylindrical surface with appreciable area, otherwise minimum overall thickness.
@@ -69,8 +70,8 @@ def prepare_cameras(sid,state):
     return public
 
 def acquire_scans(sid,state):
-    gt=ROOT/f'private/gt/{sid}'; cfg=config(); sc=cfg['scan']; placements=load_json(gt/'placements.json')
-    camera_key=stage_hash([file_hash(gt/'mesh.npz'),file_hash(gt/'placements.json'),file_hash(gt/'features.json')],sc,['camera.py','scan.py'],['numpy','open3d'])
+    gt=ROOT/f'private/gt/{sid}'; cfg=config(); sc=source_scan_settings(sid); placements=load_json(gt/'placements.json')
+    camera_key=stage_hash([file_hash(gt/'mesh.npz'),file_hash(gt/'placements.json'),file_hash(gt/'features.json')],sc,['camera.py','scan.py','sampling_density.py'],['numpy','open3d'])
     if not state.valid(sid,'trajectory',camera_key):
         state.begin(sid,'trajectory',camera_key)
         with measured() as timing: prepare_cameras(sid,state)
@@ -78,7 +79,7 @@ def acquire_scans(sid,state):
     camset=load_json(gt/'cameras.json'); meta=load_json(gt/'metadata.json'); mesh=np.load(gt/'mesh.npz')
     scene=None; inventory=[]
     for camera in camset['cameras']:
-        label=f'{sid}/{camera["id"]}'; framekey=stage_hash([file_hash(gt/'mesh.npz'),camera],sc,['scan.py','camera.py'],['numpy','open3d'])
+        label=f'{sid}/{camera["id"]}'; framekey=stage_hash([file_hash(gt/'mesh.npz'),camera],sc,['scan.py','camera.py','sampling_density.py'],['numpy','open3d'])
         index=ROOT/f'private/scan_index/{sid}/{camera["id"]}.json'
         if state.valid(label,'observations',framekey): inventory.append(load_json(index)); continue
         if scene is None: scene=scene_for(mesh['vertices'],mesh['faces'])
@@ -88,7 +89,7 @@ def acquire_scans(sid,state):
             pixel,clean,stats=raycast_frame(scene,camera,p['T_table_from_object'],sc['incidence_deg'],p['epsilon_contact_mm'])
             outputs=[]; seeds={}; paired={}
             for seed in cfg['seeds']:
-                stream=stable_seed(sc['noise_algorithm'],sid,seed,camera['placement_id'],camera['mother_frame_id'])
+                stream=stable_seed(sc['noise_algorithm'],sid,seed,camera['placement_id'],noise_frame_key(camera,sc))
                 noisy=(clean.astype(np.float64)+noise_for(pixel,stream,camset['sigma_mm'])).astype(np.float32)
                 h=observation_hash(pixel,noisy); out=ROOT/f'data/observations/{h}.npz'
                 if not out.exists(): atomic_npz(out,pixel=pixel,range_mm=noisy)
