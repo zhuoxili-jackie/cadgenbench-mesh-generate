@@ -1,0 +1,23 @@
+{
+  "status": "pass",
+  "physics_tests": {
+    "passed": 5,
+    "command": "python -m pytest tests/test_physics.py -q"
+  },
+  "ignored_large_and_private_directories_verified": [
+    "data/observations/sample.npz",
+    "private/gt/sample.step",
+    "cache/fusion.npz",
+    ".venv/pyvenv.cfg",
+    "tests/artifacts/control.step",
+    "sources/218/input.step",
+    "downloads/full.zip",
+    "runs/new/mesh.stl"
+  ],
+  "code_copy_hashes_verified": 155,
+  "staged_files": 171,
+  "staged_bytes": 16220469,
+  "sample_mesh_bytes_preserved": true,
+  "preview_directly_inspected": true,
+  "generation_goal_remains_paused": true
+}

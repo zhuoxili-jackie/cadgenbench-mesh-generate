@@ -1,0 +1,36 @@
+# Generated datasets and private evaluation material stay outside Git history.
+/data/
+/private/
+/sources/
+/cache/
+/logs/
+/state/
+/reports/
+/exported_case*/
+/collaboration/
+/tools/ocp79/
+/tests/artifacts/
+.reconstruction_cache/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+*.nbc
+*.nbi
+*.egg-info/
+.pytest_cache/
+.env
+.env.*
+!.env.example
+*.partial
+*.tmp
+Thumbs.db
+.DS_Store
+
+# Small upstream metadata, with original geometry excluded.
+!/sources/
+/sources/*
+!/sources/DATA_CARD_UPSTREAM.md
+!/sources/upstream_tree.json
+/downloads/
+/runs/

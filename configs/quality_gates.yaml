@@ -1,0 +1,18 @@
+version: quality_v1
+mesh_supported_surface_min: 0.98
+observation_retention_min: 0.95
+nonmanifold_edges_max: 0
+degenerate_faces_max: 0
+adjacent_overlap_p10_min: 0.5
+largest_component_investigate_below: 0.85
+tiny_components_area_investigate_above: 0.03
+tiny_component_area_fraction: 0.001
+evaluation_surface_samples: 30000
+noise_pairs_min: 100000
+noise_mean_sigma_max: 0.05
+noise_std_sigma_interval:
+- 0.9
+- 1.1
+reproduce_abs_mm: 1.0e-06
+reproduce_relative: 1.0e-08
+required_core_tests_may_skip: false

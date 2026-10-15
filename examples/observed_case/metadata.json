@@ -1,0 +1,26 @@
+{
+  "case_id": "case_2438b1a3fd780c63",
+  "units": "mm",
+  "coordinate_system": "canonical object; accurate known poses",
+  "difficulty": "hard",
+  "seed": 20261014,
+  "placement_count": 1,
+  "frames_per_placement": 49,
+  "mesh_files": {
+    "mesh.ply": {
+      "sha256": "ad53fc790ac7528d53b019a6d7f8b0dce8238e432499b27ae084bdb3e610d92a",
+      "bytes": 5177542
+    },
+    "mesh.stl": {
+      "sha256": "977e671dacd243c4a3c96d745a47176bb9b211a983e163157cbc3b01d12aeb09",
+      "bytes": 9873334
+    }
+  },
+  "allowed_model_inputs": [
+    "mesh.ply",
+    "mesh.stl",
+    "preview.png",
+    "metadata.json"
+  ],
+  "note": "This in-repository sample is observed geometry only. Download the separate release asset for noisy ranges, cameras, point provenance and independent reconstruction."
+}

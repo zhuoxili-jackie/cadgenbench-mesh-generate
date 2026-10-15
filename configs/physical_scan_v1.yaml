@@ -1,0 +1,56 @@
+protocol: physical_scan_v1
+status: frozen
+source_revision: f76f965585817c621d6ea0d150d745adf670e66e
+seeds:
+- 20261014
+- 20261015
+units: mm
+gt:
+  chord_mm: 0.02
+  angle_rad: 0.15
+scan:
+  turns: 3
+  intervals: 192
+  beta_top_deg: 75
+  beta_bottom_deg: 5
+  fov_deg: 45
+  framing_margin: 1.12
+  base_resolution: 768
+  allowed_resolutions:
+  - 768
+  - 1024
+  - 1536
+  incidence_deg: 75
+  sigma_relative: 0.0002
+  sigma_min_mm: 0.01
+  sigma_max_mm: 0.1
+  noise_clip_sigma: 3
+  noise_algorithm: splitmix64_box_muller_v1
+  threads: 2
+difficulty:
+  hard:
+    placements: 1
+    stride: 4
+  medium:
+    placements: 2
+    stride: 2
+  easy:
+    placements: 3
+    stride: 1
+reconstruction:
+  method: oriented_observation_bpa_v1
+  radii_h:
+  - 1.0
+  - 1.5
+  - 2.0
+  - 2.5
+  global_completion: false
+  voxel_pixel_factor: 1.5
+  normal_cluster_degrees: 30
+  support_sigma: 3
+  support_h: 1.5
+resources:
+  max_source_workers: 1
+  project_target_gib: 35
+  reserve_gib: 15
+  clean_cache_limit_gib: 2

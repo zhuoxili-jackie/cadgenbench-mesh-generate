@@ -1,0 +1,18 @@
+{
+  "schema": "data_release_index_v1",
+  "version": "v0.1.0-preview",
+  "status": "collaboration_preview_not_final_dataset",
+  "assets": [
+    {
+      "name": "observed-case-v0.1.0-preview.zip",
+      "bytes": 26399696,
+      "sha256": "a179d4d22573f62c5ca194904b5e4e4edc1af880334c9884407fc5728ba2adac",
+      "url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v0.1.0-preview/observed-case-v0.1.0-preview.zip",
+      "checksum_url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/download/v0.1.0-preview/observed-case-v0.1.0-preview.zip.sha256",
+      "contents": "one accepted observed Mesh case, its real noisy range observations, cameras, provenance and observation-only reconstruction code; no GT/STEP/private mapping"
+    }
+  ],
+  "accepted_case_inventory": "accepted_cases.jsonl",
+  "full_dataset_download_available": false,
+  "evaluation_GT_included": false
+}

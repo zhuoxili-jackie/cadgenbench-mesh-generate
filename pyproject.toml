@@ -1,0 +1,9 @@
+[project]
+name = "cadgenbench-physical-scan"
+version = "0.1.0"
+description = "Observation-only incomplete mesh reconstruction from table-aware physical scan simulation"
+requires-python = ">=3.12,<3.13"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "vendor"]
