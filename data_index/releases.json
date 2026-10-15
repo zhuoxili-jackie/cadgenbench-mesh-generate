@@ -5,7 +5,7 @@
   "release_url": "https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/tag/v1.0.0",
   "case_count": 174,
   "part_groups": 29,
-  "full_public_dataset_available": false,
+  "full_public_dataset_available": true,
   "evaluation_GT_included": false,
   "accepted_case_inventory": "accepted_cases.jsonl",
   "manifest_name": "release-manifest.json",
@@ -533,5 +533,5 @@
   ],
   "public_payload_bytes": 22948957506,
   "compressed_archive_bytes": 19531658225,
-  "publication_status": "uploading_verified_draft_assets"
+  "publication_status": "all_remote_assets_verified"
 }

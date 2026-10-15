@@ -21,8 +21,6 @@ hard 同样绕完整三圈；接触面受桌面遮挡。增加可靠放置和路
 
 ## 获取全部 174 例
 
-**上传进度：50 个已校验 ZIP 正在上传到草稿 Release；正式 Release 尚未发布。代码、174 例清单和本页 GIF 已更新，下载命令在完整发布后可用。**
-
 **代码、清单和上面的展示图在 Git；完整 STL / PLY 与观测放在 [正式 Release v1.0.0](https://github.com/zhuoxili-jackie/cadgenbench-mesh-generate/releases/tag/v1.0.0)。** 普通 `git clone` 不会下载全量数据。无需 Git LFS。
 
 | 下载类别 | 内容 | 压缩下载大小 |

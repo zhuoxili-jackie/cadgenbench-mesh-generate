@@ -64,14 +64,15 @@
   "physics_tests": {
     "exit_code": 0,
     "command": "python -m pytest tests/test_physics.py -q",
-    "log_sha256": "03a3bb42a32911ffff76e4f2806f0e79a502aa9a7c3001ab3a8ae5b894577633"
+    "log_sha256": "387283627a414e85d28c7a33b316c48d279c922b7e65d8212e5a9c3a30ee4108"
   },
   "downloader_controls": {
     "unsafe_paths_rejected": 5,
     "auth_removed_on_cross_host_redirect": true,
     "valid_archive_extracted_and_sha256_checked": true,
     "actual_corrupt_payload_rejected": true,
-    "actual_traversal_archive_rejected": true
+    "actual_traversal_archive_rejected": true,
+    "completed_part_download_recovered_without_network": true
   },
   "released_case_rebuild": {
     "status": "pass",
@@ -88,6 +89,6 @@
   "all_large_and_private_paths_ignored": true,
   "no_literal_credentials_found": true,
   "authoritative_generation_data_modified": false,
-  "time": 1792049168.4388468,
-  "seconds": 6.51176381111145
+  "time": 1792054443.8744428,
+  "seconds": 7.003859281539917
 }

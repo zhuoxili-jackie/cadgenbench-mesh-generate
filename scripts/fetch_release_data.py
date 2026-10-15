@@ -41,6 +41,10 @@ def download(asset,remote,folder,token):
         print('Verified cached archive: '+target.name,flush=True);return target
     for attempt in range(3):
         start=part.stat().st_size if part.exists() else 0
+        if start==asset['bytes']:
+            if sha(part)==asset['sha256']:
+                os.replace(part,target);print('Recovered completed download: '+target.name,flush=True);return target
+            part.unlink();start=0
         if start>asset['bytes']:part.unlink();start=0
         try:
             headers={'Accept':'application/octet-stream','Cache-Control':'no-cache'}
@@ -106,7 +110,7 @@ def main():
     assets=[asset for asset in index['assets'] if asset['family'] in selected and (not args.case_id or asset['family'] in ['metadata','previews'] or asset['name'] in required)]
     assets.sort(key=lambda asset:(asset['family']!='metadata',asset['name']))
     destination=Path(args.destination).resolve()
-    if any((destination/path).exists() for path in ['private','sources','state/state.sqlite']):parser.error('Use a separate download directory; source-generation workspaces are not extraction targets.')
+    if any((destination/path).exists() for path in ['.git','private','sources','state/state.sqlite']):parser.error('Use a separate download directory; code/source-generation workspaces are not extraction targets.')
     destination.mkdir(parents=True,exist_ok=True);archives=destination/'archives';archives.mkdir(exist_ok=True)
     token=credential(args.github_user)
     with request(API+'/repos/'+REPOSITORY+'/releases/tags/'+index['version'],token,Accept='application/vnd.github+json') as response:release=json.load(response)
