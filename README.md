@@ -65,7 +65,7 @@ python -m venv .venv
 - [小型 PLY 示例](examples/observed_case/mesh.ply)和[STL 示例](examples/observed_case/mesh.stl)可直接查看。29 个匿名 `part_group` 各六例，便于按源件组划分开发/评测；不公开 case→原始 STEP 对应表。
 - 整批验收通过，Mesh→观测支持最低 99.8267%，观测→Mesh 保留最低 95.6700%；非法/新增非流形为零。距离均为声明容差下的固定采样指标。
 - 19 件不足三种可靠姿态，按实际 1 或 2 种使用；深腔不可达、亚分辨率细节、小尺度 BPA 孔隙、部分源 STEP 的额外参数一致性问题均有明确限制。5 件近似层的参考精度单列；不承诺特定商业扫描仪精度。
-- 原长程数据生成 goal 已完成。完整历史原件、GT、来源映射、状态库及缓存不在 Git / Release；全量生成和历史审计脚本需要这些本地证据。发布包可脱离它们进行单例观测重建。
+- 原长程数据生成 goal 已完成。GT 与私有来源映射通过[独立可信评测包](docs/TRUSTED_EVALUATION_HANDOFF.md)交付，不在本生成仓库及其 Release 中。完整历史工程、状态库及缓存仍保留在本地；公开发布包可脱离它们进行单例观测重建。
 - Generate 提供扫描输入；Repair 工程为 [scanmesh-toolkit](https://github.com/zhuoxili-jackie/scanmesh-toolkit)，本次未运行 repair 或下游实验。协作者 `au12321ua` 已有本仓库 write 权限。
 
 许可及原数据出处见 [LICENSES.md](LICENSES.md)。旧 `v0.1.0-preview` 仅保留为历史首件预览；当前完整数据以 `v1.0.0` 为准。

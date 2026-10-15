@@ -11,3 +11,5 @@ Git 保存代码、配置、174 行清单、验收摘要和小型展示。大数
 包按案例及共享观测组组织。每个 Mesh 案例的 STL 与 PLY 位于同一个包；各包解压到同一目标目录。单例下载以 accepted_cases.jsonl 的 release_assets 为准，不保证一个 ZIP 只有一个案例。preset meshes 包含全部 174 例，两种子不重复命名替代。
 
 GT 与源件映射只留在可信评测侧。模型可见输入按实验允许清单配置，不把观测或评测资料默认暴露给只允许 Mesh 的实验。
+
+对应 v1.0.0 的 GT、私有映射及几何依据通过[独立评测仓库](https://github.com/zhuoxili-jackie/cadgenbench-evaluation-private)单独交付，约 632 MiB。访问与接收步骤见[可信评测交接说明](TRUSTED_EVALUATION_HANDOFF.md)。
